@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:pos_app/controllers/auth_controller.dart';
 import 'package:pos_app/models/phones.dart';
 import 'package:pos_app/models/user.dart';
+import 'package:pos_app/views/auth_screens/login_screen.dart';
+import 'package:pos_app/views/home_screen/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,18 +13,20 @@ class UserController extends GetxController {
   String userName, userEmail, userPassword, mobilePhone, attachNPhone;
   var userLoading = false.obs;
   User user = User();
+  List<dynamic> phones;
   String old;
   var showTextForm = false.obs;
 
   void onInit() {
-    getUser();
+    // autoAuthenticate();
     super.onInit();
   }
 
-  getUser() async {
+
+  getUser(token) async {
     String url = 'http://nozomecom.esolve-eg.com/api/user';
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token');
+
     print('$token');
     userLoading(true);
     final response = await http.get(
@@ -47,7 +52,8 @@ class UserController extends GetxController {
         email: responseData['email'],
         phones: responseData['phones'],
       );
-
+      print(responseData['phones']);
+      phones = responseData['phones'];
       print(user.phones);
       userLoading(false);
     }
@@ -59,7 +65,7 @@ class UserController extends GetxController {
     String url = 'http://nozomecom.esolve-eg.com/api/user/phone';
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
-    String responsebodyy ='';
+    String responsebodyy = '';
     userLoading(true);
     print('$attachNPhone');
     final Map<String, dynamic> body = {
@@ -74,13 +80,13 @@ class UserController extends GetxController {
           'Accept': 'application/json',
         },
       );
-      
+
       Get.snackbar('Processing', response.body.toString());
       responsebodyy = response.body.toString();
       print(response.body);
       attachNPhone = '';
       userLoading(false);
-      
+
       // showTextForm(false);
     } catch (e) {
       Get.snackbar('Error', responsebodyy);
@@ -135,14 +141,22 @@ class UserController extends GetxController {
     Get.snackbar('sss', response.body);
     print(response.body);
     userLoading(false);
-    getUser();
+    getUser(token);
   }
 
   void autoAuthenticate() async {
+    
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     if (token != null) {
-      getUser();
+      getUser(token);
+      Get.to(LoginScreen());
+      Future.delayed(Duration(milliseconds: 2000), () {
+      
+        Get.to(HomeScreen());
+      });
+    } else {
+      Get.to(LoginScreen());
     }
   }
 

@@ -198,12 +198,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         value: controllerss.old,
         onChanged: onchanged,
         items: controllerss.user.phones.map((phone) {
-           String text = phone.toString();
-           
-         final treplaced =  text.substring(0);
+          var i = controllerss.phones.indexOf(phone) ;
           return DropdownMenuItem<String>(
-            child: Text(treplaced),
-            value: phone.toString(),
+              child: Text(controllerss.user.phones[i]['phone'].toString()),
+            value: controllerss.user.phones[i]['id'].toString(),
           );
         }).toList(),
         decoration: InputDecoration(

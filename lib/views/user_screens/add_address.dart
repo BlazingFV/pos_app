@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pos_app/controllers/addresses_controller.dart';
 import 'package:pos_app/controllers/user_controller.dart';
 import 'package:pos_app/models/area.dart';
+import 'package:wc_form_validators/wc_form_validators.dart';
 
 class AddAddress extends StatefulWidget {
   @override
@@ -30,6 +31,7 @@ class _AddAddressState extends State<AddAddress> {
     final controllerss = Get.find<UserController>();
     String valuee;
     Area area = Area();
+    TextEditingController attachNewPhone = TextEditingController();
 
     return Scaffold(body: Obx(() {
       controller.getAreas();
@@ -75,6 +77,40 @@ class _AddAddressState extends State<AddAddress> {
                             buildPhoneTextField((value) {
                               _editAddressformData['PhSerial'] = value;
                             }),
+                              Obx(() {
+                    if(!controllerss.showTextForm.value)
+                    return Text('');
+                    else
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: attachNewPhone,
+                        onSaved: (value) => controllerss.attachNPhone = value,
+                        validator: Validators.compose([
+                          Validators.required('Phone Number is Required'),
+                          Validators.min(
+                              11, 'Please enter a valid phone number')
+                        ]),
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                              icon: Icon(Icons.edit), onPressed: () {}),
+                          labelText: 'Add A New Phone',
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                            borderSide:
+                                BorderSide(color: Colors.blue, width: 2),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                             controller.sectionsLoading.value
                                 ? Text('')
                                 : buildareasTextField((value) {
@@ -119,6 +155,30 @@ class _AddAddressState extends State<AddAddress> {
                                 },
                               ),
                             ),
+
+                            Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 55,
+                      child: RaisedButton(
+                        onPressed: () {
+                          controllerss.showTextForm.value = true;
+                            controllerss.attachPhone();
+                           
+                          print(controllerss.showTextForm);
+                          attachNewPhone.clear();
+                           controllerss.showTextForm.value = false;
+                        },
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(35)),
+                        color: Colors.blue,
+                        child: Text(
+                          'Add a New Phone',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ),
                           ],
                         );
                 },
@@ -198,11 +258,12 @@ class _AddAddressState extends State<AddAddress> {
         value: controllerss.old,
         onChanged: onchanged,
         items: controllerss.user.phones.map((phone) {
+          var i = controllerss.phones.indexOf(phone) ;
           // print(controllerss.user.phones[0]['id']);
           // print(controllerss.user.phones[0]['phone']);
           return DropdownMenuItem<String>(
-            child: Text(controllerss.user.phones[0]['phone'].toString()),
-            value: controllerss.user.phones[0]['id'].toString(),
+            child: Text(controllerss.user.phones[i]['phone'].toString()),
+            value: controllerss.user.phones[i]['id'].toString(),
           );
         }).toList(),
         decoration: InputDecoration(

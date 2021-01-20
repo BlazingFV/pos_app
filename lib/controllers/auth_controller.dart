@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:pos_app/controllers/user_controller.dart';
 import 'package:pos_app/views/auth_screens/login_screen.dart';
 import 'package:pos_app/views/home_screen/home_screen.dart';
 import 'package:pos_app/views/user_screens/addresses_screen.dart';
@@ -24,14 +25,17 @@ class AuthModel extends GetxController {
 
   @override
   void onInit() {
+     autoAuthenticate();
     super.onInit();
   }
+
+  UserController controller = Get.put(UserController());
 
   createAccount() async {
     String responsebodyy = '';
     loading(true);
     String url = 'http://nozomecom.esolve-eg.com/api/register';
-    
+
     final body = json.encode(
       {
         'email': email,
@@ -51,15 +55,14 @@ class AuthModel extends GetxController {
         body: body,
       );
       final Map<String, dynamic> responseData = json.decode(response.body);
-     
-      if (response.statusCode ==200) {
-        
-        responsebodyy=response.body;
+
+      if (response.statusCode == 200) {
+        responsebodyy = response.body;
         Get.snackbar(
           'registered',
           'You Registered Successfully',
         );
-        
+
         loading(false);
         Future.delayed(Duration(milliseconds: 450), () {
           loading(false);
@@ -118,5 +121,18 @@ class AuthModel extends GetxController {
         responseBodyy.toString(),
       );
     }
+  }
+
+  autoAuthenticate() async {
+    loading(true);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    if (token != null) {
+      controller.autoAuthenticate();
+      
+    }else if(token == null){
+      loading(false);
+    }
+    
   }
 }

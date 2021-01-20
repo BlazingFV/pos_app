@@ -31,7 +31,8 @@ class AddressesController extends GetxController {
   editAddress(formData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
-    String url = 'http://nozomecom.esolve-eg.com/address/2';
+    String url = 'http://nozomecom.esolve-eg.com/address/$addressId';
+    addressLoading(true);
     try {
       final response = await http.put(
         url,
@@ -45,17 +46,19 @@ class AddressesController extends GetxController {
       print(response.body);
       if (response.statusCode == 200) {
         String responseMsg = "Address Added Successfully";
-        Get.snackbar('Success', responseMsg,
-            snackPosition: SnackPosition.BOTTOM,
-            colorText: Colors.white,
-            backgroundColor: Colors.black);
+        // Get.snackbar('Success', responseMsg,
+        //     snackPosition: SnackPosition.BOTTOM,
+        //     colorText: Colors.white,
+        //     backgroundColor: Colors.black);
         Future.delayed(Duration(milliseconds: 300), () {
           Get.off(AddressesScreen());
         });
         print(response.body);
+        addressLoading(false);
+        update();
       } else {
-        Get.snackbar('error', response.body);
-        print(response.body);
+        // Get.snackbar('error', response.body);
+        // print(response.body);
       }
     } catch (e) {
       Get.snackbar('error', e.message);
@@ -146,7 +149,7 @@ class AddressesController extends GetxController {
         adresses.assignAll(loadedAddresses);
         // print(response.body);
         // print('$adresses sss');
-    
+    update();
         addressLoading(false);
       }
     } catch (e) {
@@ -173,7 +176,7 @@ class AddressesController extends GetxController {
         // adresses.assignAll(loadedAddresses);
         print(response.body);
         // print('$adresses sss');
-    
+    update();
         addressLoading(false);
       }
     } catch (e) {
@@ -210,6 +213,7 @@ class AddressesController extends GetxController {
         List<Area> loadedSections = fromAreaJsonArray(response.body);
         print(sectionId);
         sections = loadedSections;
+        update();
          });
          
                 
