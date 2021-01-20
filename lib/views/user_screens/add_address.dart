@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -77,66 +79,83 @@ class _AddAddressState extends State<AddAddress> {
                             buildPhoneTextField((value) {
                               _editAddressformData['PhSerial'] = value;
                             }),
-                              Obx(() {
-                    if(!controllerss.showTextForm.value)
-                    return Text('');
-                    else
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        controller: attachNewPhone,
-                        onSaved: (value) => controllerss.attachNPhone = value,
-                        validator: Validators.compose([
-                          Validators.required('Phone Number is Required'),
-                          Validators.min(
-                              11, 'Please enter a valid phone number')
-                        ]),
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                              icon: Icon(Icons.edit), onPressed: () {}),
-                          labelText: 'Add A New Phone',
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                            borderSide:
-                                BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                            Obx(() {
+                              if (!controllerss.showTextForm.value)
+                                return Text('');
+                              else
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextFormField(
+                                    controller: attachNewPhone,
+                                    onSaved: (value) =>
+                                        controllerss.attachNPhone = value,
+                                    validator: Validators.compose([
+                                      Validators.required(
+                                          'Phone Number is Required'),
+                                      Validators.min(11,
+                                          'Please enter a valid phone number')
+                                    ]),
+                                    decoration: InputDecoration(
+                                      suffixIcon: IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {}),
+                                      labelText: 'Add A New Phone',
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        borderSide: BorderSide(
+                                            color: Colors.blue, width: 2),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                          width: 2,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                            }),
                             controller.sectionsLoading.value
                                 ? Text('')
-                                : buildareasTextField((value) {
-                                    setState(() {
-                                      _editAddressformData['AreaNo'] = value;
-                                      controller.sectionId = value;
-                                      newValue = value;
-                                      // print(controller.sectionId);
-                                      controller.getAreas();
-                                      selected = true;
-                                    });
-                                  }, () {
-                                    setState(() {
-                                      selected = false;
-                                      controller.sectionId =
-                                          _editAddressformData['AreaNo'];
-                                      controller.getAreas();
-                                    });
-                                  }),
-                            selected
-                                ? Container(
-                                    width: 400,
-                                    height: 80,
-                                    child: buildSectionsTextField(
-                                        (value) {}, true))
-                                : Text(''),
+                                : GetBuilder<AddressesController>(
+                                    init: AddressesController(),
+                                    initState: (_) {},
+                                    builder: (cont) {
+                                      return buildareasTextField((value) {
+                                        _editAddressformData['AreaNo'] = value;
+                                        controller.sectionId = value;
+                                        newValue = value;
+                                        cont.areaSelc = true;
+                                        cont.getAreas();
+
+                                        Timer.periodic(Duration(seconds: 2), (t) {
+                                          setState(() {
+                                            cont.areaSelc = false;
+                                            print(cont.areaSelc);
+                                          });
+                                          t.cancel();
+                                          
+                                        });
+                                      }, () {});
+                                    }),
+
+                            Container(
+                                width: 400,
+                                height: 80,
+                                child: GetBuilder<AddressesController>(
+                                    init: AddressesController(),
+                                    initState: (_) {},
+                                    builder: (cont) {
+                                      if (cont.areaSelc)
+                                        return Center(
+                                            child: CircularProgressIndicator());
+                                      else
+                                        return buildSectionsTextField(
+                                            (value) {});
+                                    })),
 
                             Container(
                               margin: EdgeInsets.only(top: 15),
@@ -157,28 +176,29 @@ class _AddAddressState extends State<AddAddress> {
                             ),
 
                             Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 55,
-                      child: RaisedButton(
-                        onPressed: () {
-                          controllerss.showTextForm.value = true;
-                            controllerss.attachPhone();
-                           
-                          print(controllerss.showTextForm);
-                          attachNewPhone.clear();
-                           controllerss.showTextForm.value = false;
-                        },
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(35)),
-                        color: Colors.blue,
-                        child: Text(
-                          'Add a New Phone',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                      ),
-                    ),
-                  ),
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 55,
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    controllerss.showTextForm.value = true;
+                                    controllerss.attachPhone();
+
+                                    print(controllerss.showTextForm);
+                                    attachNewPhone.clear();
+                                    controllerss.showTextForm.value = false;
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(35)),
+                                  color: Colors.blue,
+                                  child: Text(
+                                    'Add a New Phone',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 18),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         );
                 },
@@ -258,7 +278,7 @@ class _AddAddressState extends State<AddAddress> {
         value: controllerss.old,
         onChanged: onchanged,
         items: controllerss.user.phones.map((phone) {
-          var i = controllerss.phones.indexOf(phone) ;
+          var i = controllerss.phones.indexOf(phone);
           // print(controllerss.user.phones[0]['id']);
           // print(controllerss.user.phones[0]['phone']);
           return DropdownMenuItem<String>(
@@ -293,8 +313,6 @@ class _AddAddressState extends State<AddAddress> {
         onChanged: onchanged,
         onTap: onTap,
         items: controller.areas.map((area) {
-          controller.getAreas();
-          
           return DropdownMenuItem<String>(
             child: Text('${area.areaName}'),
             value: "${area.id}",
@@ -318,81 +336,43 @@ class _AddAddressState extends State<AddAddress> {
     );
   }
 
-  Widget buildSectionsTextField(onchanged, bool chance) {
-    return (chance)
-        ? Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButtonFormField(
-              onChanged: (value){
-               
-
-                setState(() {
-                  value = newValue;
-                });
-              },
-              onTap: (){
-                setState(() {
-                  controller.sectionId = newValue;
-                });
-              },
-              items: controller.sections.map((section) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {});
-                return DropdownMenuItem<String>(
-                  child: Text('${section.areaName}'),
-                  value: controller.sectionId,
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                hintText: controller.areas != null ? 'Areas' : 'loading',
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
+  Widget buildSectionsTextField(onchanged) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: DropdownButtonFormField(
+        onChanged: (value) {
+          setState(() {
+            value = newValue;
+          });
+        },
+        onTap: () {
+          setState(() {
+            controller.sectionId = newValue;
+          });
+        },
+        items: controller.sections.map((section) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {});
+          return DropdownMenuItem<String>(
+            child: Text('${section.areaName}'),
+            value: controller.sectionId,
+          );
+        }).toList(),
+        decoration: InputDecoration(
+          hintText: controller.areas != null ? 'Areas' : 'loading',
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(color: Colors.blue, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.grey,
+              width: 2,
             ),
-          )
-        : Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButtonFormField(
-              onChanged: (value){
-                print(value);
-                setState(() {
-                  
-                });
-              },
-              onTap: (){
-                setState(() {
-                  
-                });
-              },
-              items: controller.sections.map((section) {
-                return DropdownMenuItem<String>(
-                  child: Text('${section.areaName}'),
-                  value: controller.sectionId,
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                hintText: controller.areas != null ? 'Areas' : 'loading',
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-            ));
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildBuildingNoTextField(value, onSaved) {

@@ -10,21 +10,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class AddressesController extends GetxController {
-  var  adresses = List<Addresses>().obs;
+  var adresses = List<Addresses>().obs;
   var areas = List<Area>();
- var sections = List<Area>();
+  var sections = List<Area>();
   var selected = false.obs;
+  bool areaSelc = false;
   var addressLoading = false.obs;
   var areaLoading = false;
   var sectionsLoading = false.obs;
-  var sectionId ='';
-  var addressId ='';
+  var sectionId = '';
+  var addressId = '';
   String oldValue;
   @override
   void onInit() {
     getAreas();
     getAddresses();
-     getSections();
+    getSections();
     super.onInit();
   }
 
@@ -103,7 +104,6 @@ class AddressesController extends GetxController {
   }
 
   getSections() async {
-    
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String url = 'http://nozomecom.esolve-eg.com/api/area/list';
@@ -149,14 +149,15 @@ class AddressesController extends GetxController {
         adresses.assignAll(loadedAddresses);
         // print(response.body);
         // print('$adresses sss');
-    update();
+        update();
         addressLoading(false);
       }
     } catch (e) {
       //
     }
   }
-   deleteAddress() async {
+
+  deleteAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String url = 'http://nozomecom.esolve-eg.com/api/address/$addressId';
@@ -176,7 +177,7 @@ class AddressesController extends GetxController {
         // adresses.assignAll(loadedAddresses);
         print(response.body);
         // print('$adresses sss');
-    update();
+        update();
         addressLoading(false);
       }
     } catch (e) {
@@ -185,16 +186,15 @@ class AddressesController extends GetxController {
   }
 
   getAreas() async {
-  
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     String sss = '/api/area/list'.trim();
-    Map<String,String> queryParams = {
-      'SectionNo':sectionId,
+    Map<String, String> queryParams = {
+      'SectionNo': sectionId,
     };
-    var uri = Uri.http('nozomecom.esolve-eg.com',sss,queryParams);
+    var uri = Uri.http('nozomecom.esolve-eg.com', sss, queryParams);
     // String url = 'http://nozomecom.esolve-eg.com/api/address/list?$queryParams';
-    areaLoading = true;
+    
     try {
       final response = await http.get(
         uri,
@@ -206,19 +206,14 @@ class AddressesController extends GetxController {
       );
       // print(uri);
       // print(response.body);
-       if (response.statusCode == 200) {
-         
-        Future.delayed(Duration(milliseconds: 0),(){
-
+      if (response.statusCode == 200) {
         List<Area> loadedSections = fromAreaJsonArray(response.body);
         print(sectionId);
         sections = loadedSections;
-        update();
-         });
-         
-                
-      }
 
+        update();
+        
+      }
     } catch (e) {}
   }
 
