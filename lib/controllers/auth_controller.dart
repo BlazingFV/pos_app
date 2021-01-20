@@ -129,7 +129,6 @@ class AuthModel extends GetxController {
     String token = prefs.getString('token');
     if (token != null) {
       controller.autoAuthenticate();
-      
     }else if(token == null){
       loading(false);
     }

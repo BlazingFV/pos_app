@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pos_app/controllers/categories_controller.dart';
-
 class CategoriesScreen extends StatefulWidget {
   @override
   _CategoriesScreenState createState() => _CategoriesScreenState();
