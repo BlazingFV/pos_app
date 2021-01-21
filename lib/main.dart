@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pos_app/helpers/bindings.dart';
 import 'package:pos_app/views/auth_screens/login_screen.dart';
 import 'package:pos_app/views/cart_screen/check_outscreen/cart_screen.dart';
+import 'package:pos_app/views/splash_screen.dart';
 import 'package:pos_app/views/user_screens/addresses_screen.dart';
 import 'package:pos_app/views/user_screens/profile_screen.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       initialBinding: Binding(),
       title: 'El-Nozom',
       theme: ThemeData(),
-      home: LoginScreen(),
+      home: SplashScreen(),
     );
   }
 }

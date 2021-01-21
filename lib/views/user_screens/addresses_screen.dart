@@ -6,8 +6,13 @@ import 'package:pos_app/models/addresses.dart';
 import 'package:pos_app/views/user_screens/add_address.dart';
 import 'package:pos_app/views/user_screens/edit_address.dart';
 
-class AddressesScreen extends GetWidget<AddressesController> {
-  final AddressesController controllerss = Get.put(AddressesController());
+class AddressesScreen extends StatefulWidget {
+  @override
+  _AddressesScreenState createState() => _AddressesScreenState();
+}
+
+class _AddressesScreenState extends State<AddressesScreen> {
+  final AddressesController controller = Get.put(AddressesController());
   Addresses address = Addresses();
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,7 @@ class AddressesScreen extends GetWidget<AddressesController> {
         ],
       ),
       body: Obx(() {
-        if (controllerss.addressLoading.value) {
+        if (controller.addressLoading.value) {
           return Center(child: CircularProgressIndicator());
         } else if (controller.adresses.length < 1) {
           return Center(
@@ -62,8 +67,12 @@ class AddressesScreen extends GetWidget<AddressesController> {
         height: MediaQuery.of(context).size.height * 65,
         child: ListView(
           children: controller.adresses.map((address) {
-             controller.addressId =address.id.toString();
-           return Card(
+            controller.addressId = address.id.toString();
+            controller.street = address.street;
+            controller.buildingNo = address.buildingNo;
+            controller.flatNo = address.flatNo;
+            controller.rowNo = address.flatNo;
+            return Card(
               elevation: 5,
               child: Column(
                 children: [
@@ -96,15 +105,19 @@ class AddressesScreen extends GetWidget<AddressesController> {
                     child: IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () {
+                          controller.findAddresses();
+                          print(controller.addressId);
                           Get.to(EditAddressScreen());
+                          
                         }),
                   ),
-                     Align(
+                  Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
-                        icon: Icon(Icons.delete,color:Colors.red),
+                        icon: Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                         controller.deleteAddress();
+                          controller.deleteAddress();
+                          controller.getAddresses();
                         }),
                   ),
                 ],

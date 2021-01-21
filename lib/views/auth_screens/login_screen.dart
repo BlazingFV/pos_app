@@ -38,11 +38,11 @@ class LoginScreen extends GetWidget<AuthModel> {
                     keyboardType: TextInputType.emailAddress,
                     onSaved: (val) => controller.email = val,
                     validator: Validators.compose([
-                      Validators.required('email is required'),
-                      Validators.email('Invalid Email Address')
+                      Validators.required('E-mail or Phone is Required'),
+                      
                     ]),
                     decoration: InputDecoration(
-                      hintText: 'Email Address',
+                      hintText: 'E-mail or Phone',
                     ),
                   ),
                 ),
@@ -53,7 +53,7 @@ class LoginScreen extends GetWidget<AuthModel> {
                     obscureText: true,
                     validator: Validators.compose([
                       Validators.required('Password is required.'),
-                      Validators.min(6, 'Please enter 6 characters or more.'),
+                      Validators.minLength(6, 'Please Enter 6 or more Characters')
                     ]),
                     decoration: InputDecoration(
                       hintText: 'Password',

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:pos_app/controllers/auth_controller.dart';
 import 'package:pos_app/models/phones.dart';
@@ -22,11 +21,10 @@ class UserController extends GetxController {
     super.onInit();
   }
 
-
   getUser(token) async {
     String url = 'http://nozomecom.esolve-eg.com/api/user';
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    prefs.getString('token');
     print('$token');
     userLoading(true);
     final response = await http.get(
@@ -56,6 +54,14 @@ class UserController extends GetxController {
       phones = responseData['phones'];
       print(user.phones);
       userLoading(false);
+
+      Future.delayed(Duration(milliseconds: 2000), () {
+        Get.to(LoginScreen());
+        Get.to(HomeScreen());
+      });
+    } else {
+      Get.to(LoginScreen());
+      
     }
 
     return user;
@@ -84,12 +90,12 @@ class UserController extends GetxController {
       Get.snackbar('Processing', response.body.toString());
       responsebodyy = response.body.toString();
       print(response.body);
-      attachNPhone = '';
+      // attachNPhone = '';
       userLoading(false);
 
       // showTextForm(false);
     } catch (e) {
-      Get.snackbar('Error', responsebodyy);
+      Get.snackbar('Error', responsebodyy.toString());
       userLoading(false);
     }
   }
@@ -145,18 +151,12 @@ class UserController extends GetxController {
   }
 
   void autoAuthenticate() async {
-    
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
     if (token != null) {
       getUser(token);
-      Get.to(LoginScreen());
-      Future.delayed(Duration(milliseconds: 2000), () {
-      
-        Get.to(HomeScreen());
-      });
     } else {
-      Get.to(LoginScreen());
+      getUser(token);
     }
   }
 

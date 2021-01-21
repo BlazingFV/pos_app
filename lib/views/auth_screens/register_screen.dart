@@ -99,7 +99,7 @@ class RegisterScreen extends GetWidget<AuthModel> {
                     obscureText: true,
                     validator: Validators.compose([
                       Validators.required('Password is required.'),
-                      Validators.min(6, 'Please enter 6 characters or more.'),
+                      Validators.minLength(6, 'Please enter 6 characters or more.'),
                     ]),
                     decoration: InputDecoration(
                       hintText: 'Password',

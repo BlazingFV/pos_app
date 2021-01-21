@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class AuthModel extends GetxController {
 
   @override
   void onInit() {
-     autoAuthenticate();
+    autoAuthenticate();
     super.onInit();
   }
 
@@ -83,7 +84,7 @@ class AuthModel extends GetxController {
     loading(true);
     String url = 'http://nozomecom.esolve-eg.com/api/login';
     final body = json.encode({
-      'email': email,
+      'emailOrPhone': email,
       'password': password,
     });
     try {
@@ -102,8 +103,13 @@ class AuthModel extends GetxController {
       if (responseData.containsKey('access_token')) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String token = responseData['access_token'];
+        prefs.setString('token', '');
         prefs.setString('token', token);
-        print('$token');
+        
+
+        // prefs.setString('token', '');
+        // print('$token');
+        print(response.body);
         Get.snackbar(
           'Logged In',
           'You Logged In Successfully',
@@ -111,7 +117,7 @@ class AuthModel extends GetxController {
 
         Future.delayed(Duration(milliseconds: 550), () {
           loading(false);
-          Get.offAll(HomeScreen());
+          controller.getUser(token);
         });
       }
     } catch (message) {
@@ -129,9 +135,12 @@ class AuthModel extends GetxController {
     String token = prefs.getString('token');
     if (token != null) {
       controller.autoAuthenticate();
-    }else if(token == null){
+      Timer.periodic(Duration(milliseconds: 3000), (timer) { 
+      loading(false);
+      });
+    } else if (token == null) {
+      
       loading(false);
     }
-    
   }
 }

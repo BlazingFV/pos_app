@@ -131,13 +131,13 @@ class _AddAddressState extends State<AddAddress> {
                                         cont.areaSelc = true;
                                         cont.getAreas();
 
-                                        Timer.periodic(Duration(seconds: 2), (t) {
+                                        Timer.periodic(Duration(seconds: 2),
+                                            (t) {
                                           setState(() {
                                             cont.areaSelc = false;
                                             print(cont.areaSelc);
                                           });
                                           t.cancel();
-                                          
                                         });
                                       }, () {});
                                     }),
@@ -170,6 +170,7 @@ class _AddAddressState extends State<AddAddress> {
                                     return;
                                   }
                                   _formKey.currentState.save();
+                                  controller.getAddresses();
                                   controller.addAddresses(_editAddressformData);
                                 },
                               ),
@@ -181,12 +182,14 @@ class _AddAddressState extends State<AddAddress> {
                                 height: 55,
                                 child: RaisedButton(
                                   onPressed: () {
-                                    controllerss.showTextForm.value = true;
+                                    controllerss.showTextForm.value =
+                                        !controllerss.showTextForm.value;
                                     controllerss.attachPhone();
+                                    _formKey.currentState.save();
+                                    print(controllerss.attachNPhone);
 
                                     print(controllerss.showTextForm);
-                                    attachNewPhone.clear();
-                                    controllerss.showTextForm.value = false;
+                                    // attachNewPhone.clear();
                                   },
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(35)),

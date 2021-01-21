@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pos_app/controllers/addresses_controller.dart';
 
 import 'package:pos_app/controllers/user_controller.dart';
+import 'package:wc_form_validators/wc_form_validators.dart';
 
 class EditAddressScreen extends StatefulWidget {
   @override
@@ -10,7 +13,7 @@ class EditAddressScreen extends StatefulWidget {
 }
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
- final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final Map<String, dynamic> _editAddressformData = {};
   final Map<String, dynamic> testt = {};
@@ -25,13 +28,12 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   @override
   Widget build(BuildContext context) {
     // controller.selected(false);
+    TextEditingController attachNewPhone = TextEditingController();
 
     final controllerss = Get.put(UserController());
     String valuee;
-    
-
     return Scaffold(body: Obx(() {
-      controller.getAreas();
+      // controller.getAreas();
       if (controllerss.userLoading.value || controller.addressLoading.value)
         return Center(
           child: CircularProgressIndicator(),
@@ -49,77 +51,142 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 builder: (_) {
                   return controller.addressLoading.value
                       ? ''
-                      : Column(
-                          children: [
-                            SizedBox(
-                              height: 50,
-                            ),
-                            buildBuildingNoTextField('', (value) {
-                              _editAddressformData['BuildingNo'] = value;
-                            }),
+                      : GetBuilder<AddressesController>(
+                          init: AddressesController(),
+                          initState: (_) {},
+                          builder: (cont) {
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  height: 50,
+                                ),
+                                buildBuildingNoTextField(
+                                    '${cont.findAddress.buildingNo}', (value) {
+                                  _editAddressformData['BuildingNo'] = value;
+                                }),
 
-                            buildRowNoTextField('', (value) {
-                              _editAddressformData['RowNo'] = value;
-                            }),
-                            buildFlatNoTextField('', (value) {
-                              _editAddressformData['FlatNo'] = value;
-                            }),
-                            buildStreetTextField('', (value) {
-                              _editAddressformData['Street'] = value;
-                            }),
+                                buildRowNoTextField('${cont.findAddress.rowNo}',
+                                    (value) {
+                                  _editAddressformData['RowNo'] = value;
+                                }),
+                                buildFlatNoTextField('${cont.findAddress.flatNo}',
+                                    (value) {
+                                  _editAddressformData['FlatNo'] = value;
+                                }),
+                                buildStreetTextField('${cont.findAddress.street}',
+                                    (value) {
+                                  _editAddressformData['Street'] = value;
+                                }),
 
-                            //   buildAreaNoTextField('PhSerial', (value) {
-                            //   _editAddressformData['PhSerial'] = value;
-                            // }),
-                            buildPhoneTextField((value) {
-                              _editAddressformData['PhSerial'] = value;
+                                //   buildAreaNoTextField('PhSerial', (value) {
+                                //   _editAddressformData['PhSerial'] = value;
+                                // }),
+                                buildPhoneTextField((value) {
+                                  _editAddressformData['PhSerial'] = value;
+                                }),
+                                    Obx(() {
+                              if (!controllerss.showTextForm.value)
+                                return Text('');
+                              else
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextFormField(
+                                    controller: attachNewPhone,
+                                    onSaved: (value) =>
+                                        controllerss.attachNPhone = value,
+                                    validator: Validators.compose([
+                                      Validators.required(
+                                          'Phone Number is Required'),
+                                      Validators.min(11,
+                                          'Please enter a valid phone number')
+                                    ]),
+                                    decoration: InputDecoration(
+                                      suffixIcon: IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {}),
+                                      labelText: 'Add A New Phone',
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        borderSide: BorderSide(
+                                            color: Colors.blue, width: 2),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                          width: 2,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                    ),
+                                  ),
+                                );
                             }),
-                            // controller.sectionsLoading.value
-                            //     ? Text('')
-                            //     : buildareasTextField((value) {
-                            //         setState(() {
-                            //           _editAddressformData['AreaNo'] = value;
-                            //           controller.sectionId = value;
-                            //           newValue = value;
-                            //           // print(controller.sectionId);
-                            //           controller.getAreas();
-                            //           selected = true;
-                            //         });
-                            //       }, () {
-                            //         setState(() {
-                            //           selected = false;
-                            //           controller.sectionId =
-                            //               _editAddressformData['AreaNo'];
-                            //           controller.getAreas();
-                            //         });
-                            //       }),
-                            // selected
-                            //     ? Container(
-                            //         width: 400,
-                            //         height: 80,
-                            //         child: buildSectionsTextField(
-                            //             (value) {}, true))
-                            //     : Text(''),
+                            controller.sectionsLoading.value
+                                ? Text('')
+                                : GetBuilder<AddressesController>(
+                                    init: AddressesController(),
+                                    initState: (_) {},
+                                    builder: (cont) {
+                                      return buildareasTextField((value) {
+                                        _editAddressformData['AreaNo'] = value;
+                                        controller.sectionId = value;
+                                        newValue = value;
+                                        cont.areaSelc = true;
+                                        cont.getAreas();
 
-                            Container(
-                              margin: EdgeInsets.only(top: 15),
-                              width: double.infinity,
-                              child: RaisedButton(
-                                child: Text('Save'),
-                                textColor: Colors.white,
-                                color: Theme.of(context).primaryColor,
-                                onPressed: () {
-                                  print(_editAddressformData);
-                                  if (!_formKey.currentState.validate()) {
-                                    return;
-                                  }
-                                  _formKey.currentState.save();
-                                  controller.editAddress(_editAddressformData);
-                                  
-                                },
-                              ),
-                            ),
-                          ],
+                                        Timer.periodic(Duration(seconds: 2),
+                                            (t) {
+                                          setState(() {
+                                            cont.areaSelc = false;
+                                            print(cont.areaSelc);
+                                          });
+                                          t.cancel();
+                                        });
+                                      }, () {});
+                                    }),
+                                Container(
+                                width: 400,
+                                height: 80,
+                                child: GetBuilder<AddressesController>(
+                                    init: AddressesController(),
+                                    initState: (_) {},
+                                    builder: (cont) {
+                                      if (cont.areaSelc)
+                                        return Center(
+                                            child: CircularProgressIndicator());
+                                      else
+                                        return buildSectionsTextField(
+                                            (value) {});
+                                    })),
+
+
+                                Container(
+                                  margin: EdgeInsets.only(top: 15),
+                                  width: double.infinity,
+                                  child: RaisedButton(
+                                    child: Text('Save'),
+                                    textColor: Colors.white,
+                                    color: Theme.of(context).primaryColor,
+                                    onPressed: () {
+                                      print(_editAddressformData);
+                                      if (!_formKey.currentState.validate()) {
+                                        return;
+                                      }
+                                      _formKey.currentState.save();
+                                      controller
+                                          .editAddress(_editAddressformData);
+                                          controller.findAddresses();
+                                           controller.getAddresses();
+                                           print(controller.addressId);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                            
+                          },
                         );
                 },
               ),
@@ -146,7 +213,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         }
       },
       onSaved: onSavedFunc,
-      onChanged: onChangedFunc,
+      onChanged: onChanged,
     );
   }
 
@@ -198,9 +265,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         value: controllerss.old,
         onChanged: onchanged,
         items: controllerss.user.phones.map((phone) {
-          var i = controllerss.phones.indexOf(phone) ;
+          var i = controllerss.phones.indexOf(phone);
           return DropdownMenuItem<String>(
-              child: Text(controllerss.user.phones[i]['phone'].toString()),
+            child: Text(controllerss.user.phones[i]['phone'].toString()),
             value: controllerss.user.phones[i]['id'].toString(),
           );
         }).toList(),
@@ -231,8 +298,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
         onChanged: onchanged,
         onTap: onTap,
         items: controller.areas.map((area) {
-          controller.getAreas();
-          
+          // controller.getAreas();
+
           return DropdownMenuItem<String>(
             child: Text('${area.areaName}'),
             value: "${area.id}",
@@ -256,81 +323,43 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     );
   }
 
-  Widget buildSectionsTextField(onchanged, bool chance) {
-    return (chance)
-        ? Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButtonFormField(
-              onChanged: (value){
-               
-
-                setState(() {
-                  value = newValue;
-                });
-              },
-              onTap: (){
-                setState(() {
-                  controller.sectionId = newValue;
-                });
-              },
-              items: controller.sections.map((section) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {});
-                return DropdownMenuItem<String>(
-                  child: Text('${section.areaName}'),
-                  value: controller.sectionId,
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                hintText: controller.areas != null ? 'Areas' : 'loading',
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
+  Widget buildSectionsTextField(onchanged) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: DropdownButtonFormField(
+        onChanged: (value) {
+          setState(() {
+            value = newValue;
+          });
+        },
+        onTap: () {
+          setState(() {
+            controller.sectionId = newValue;
+          });
+        },
+        items: controller.sections.map((section) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {});
+          return DropdownMenuItem<String>(
+            child: Text('${section.areaName}'),
+            value: controller.sectionId,
+          );
+        }).toList(),
+        decoration: InputDecoration(
+          hintText: controller.areas != null ? 'Areas' : 'loading',
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(color: Colors.blue, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.grey,
+              width: 2,
             ),
-          )
-        : Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButtonFormField(
-              onChanged: (value){
-                print(value);
-                setState(() {
-                  
-                });
-              },
-              onTap: (){
-                setState(() {
-                  
-                });
-              },
-              items: controller.sections.map((section) {
-                return DropdownMenuItem<String>(
-                  child: Text('${section.areaName}'),
-                  value: controller.sectionId,
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                hintText: controller.areas != null ? 'Areas' : 'loading',
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-            ));
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildBuildingNoTextField(value, onSaved) {
@@ -346,7 +375,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             return null;
           }
         },
-        onSaved: onSaved);
+        onChanged: onSaved);
   }
 
   Widget buildFlatNoTextField(value, onSaved) {
@@ -362,7 +391,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
             return null;
           }
         },
-        onSaved: onSaved);
+        onChanged: onSaved);
   }
 
   Widget buildStreetTextField(value, onSaved) {

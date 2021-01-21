@@ -5,12 +5,15 @@ import 'package:get/get.dart';
 import 'package:pos_app/controllers/user_controller.dart';
 import 'package:pos_app/models/addresses.dart';
 import 'package:pos_app/models/area.dart';
+import 'package:pos_app/models/findAddress.dart';
 import 'package:pos_app/views/user_screens/addresses_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class AddressesController extends GetxController {
   var adresses = List<Addresses>().obs;
+  var fiindAddresses = [];
+  FindAddress findAddress = FindAddress();
   var areas = List<Area>();
   var sections = List<Area>();
   var selected = false.obs;
@@ -20,6 +23,10 @@ class AddressesController extends GetxController {
   var sectionsLoading = false.obs;
   var sectionId = '';
   var addressId = '';
+  var rowNo = '';
+  var street = '';
+  var flatNo = '';
+  var buildingNo = '';
   String oldValue;
   @override
   void onInit() {
@@ -32,8 +39,8 @@ class AddressesController extends GetxController {
   editAddress(formData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
-    String url = 'http://nozomecom.esolve-eg.com/address/$addressId';
-    addressLoading(true);
+    String url = 'http://nozomecom.esolve-eg.com/api/address/$addressId';
+    // addressLoading(true);
     try {
       final response = await http.put(
         url,
@@ -51,11 +58,12 @@ class AddressesController extends GetxController {
         //     snackPosition: SnackPosition.BOTTOM,
         //     colorText: Colors.white,
         //     backgroundColor: Colors.black);
-        Future.delayed(Duration(milliseconds: 300), () {
+        Future.delayed(Duration(milliseconds: 1000), () {
+          print(response.body);
+         getAddresses();
           Get.off(AddressesScreen());
         });
-        print(response.body);
-        addressLoading(false);
+
         update();
       } else {
         // Get.snackbar('error', response.body);
@@ -157,6 +165,37 @@ class AddressesController extends GetxController {
     }
   }
 
+  findAddresses() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token');
+    String url = 'http://nozomecom.esolve-eg.com/api/address/find/$addressId';
+    addressLoading(true);
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json'
+        },
+      );
+      // print(response.body);
+
+      if (response.statusCode == 200) {
+        final loadedFindAdd = FindAddress.fromJson(response.body);
+        findAddress = loadedFindAdd;
+        print(response.body);
+        fiindAddresses.add(findAddress);
+        findAddress = loadedFindAdd;
+        print(fiindAddresses);
+        update();
+        addressLoading(false);
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   deleteAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token');
@@ -177,6 +216,7 @@ class AddressesController extends GetxController {
         // adresses.assignAll(loadedAddresses);
         print(response.body);
         // print('$adresses sss');
+        getAddresses();
         update();
         addressLoading(false);
       }
@@ -194,7 +234,7 @@ class AddressesController extends GetxController {
     };
     var uri = Uri.http('nozomecom.esolve-eg.com', sss, queryParams);
     // String url = 'http://nozomecom.esolve-eg.com/api/address/list?$queryParams';
-    
+
     try {
       final response = await http.get(
         uri,
@@ -212,7 +252,6 @@ class AddressesController extends GetxController {
         sections = loadedSections;
 
         update();
-        
       }
     } catch (e) {}
   }
