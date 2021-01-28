@@ -210,9 +210,9 @@ class ProfileScreen extends GetWidget<UserController> {
 
   ListTile buildDetailsListTile() {
       // var i = controller.phones.indexOf('phone');
-    _nameController.text = controller.user.name;
-    _emailController.text = controller.user.email;
-    _phoneController.text = controller.user.phones[0]['phone'].toString();
+    _nameController.text = controller.userC.user.name;
+    _emailController.text = controller.userC.user.email;
+    _phoneController.text = controller.phones[0];
     return ListTile(
       title: Text(
         'Your Details',

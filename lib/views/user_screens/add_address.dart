@@ -78,6 +78,7 @@ class _AddAddressState extends State<AddAddress> {
                             // }),
                             buildPhoneTextField((value) {
                               _editAddressformData['PhSerial'] = value;
+                              print(value);
                             }),
                             Obx(() {
                               if (!controllerss.showTextForm.value)
@@ -170,8 +171,9 @@ class _AddAddressState extends State<AddAddress> {
                                     return;
                                   }
                                   _formKey.currentState.save();
-                                  controller.getAddresses();
+
                                   controller.addAddresses(_editAddressformData);
+                                  // controller.getAddresses();
                                 },
                               ),
                             ),
@@ -280,18 +282,19 @@ class _AddAddressState extends State<AddAddress> {
       child: DropdownButtonFormField(
         value: controllerss.old,
         onChanged: onchanged,
-        items: controllerss.user.phones.map((phone) {
-          var i = controllerss.phones.indexOf(phone);
+        items: controllerss.userC.user.phones.map((phone) {
+          print(controllerss.phones);
+          // var i = controllerss.phones.indexOf(phone);
           // print(controllerss.user.phones[0]['id']);
           // print(controllerss.user.phones[0]['phone']);
           return DropdownMenuItem<String>(
-            child: Text(controllerss.user.phones[i]['phone'].toString()),
-            value: controllerss.user.phones[i]['id'].toString(),
+            child: Text(phone.phone),
+            value: phone.id.toString(),
           );
         }).toList(),
         decoration: InputDecoration(
           hintText:
-              controllerss.user.phones != null ? 'Mobile Phones' : 'loading',
+              controllerss.phones != null ? 'Mobile Phones' : 'loading',
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20.0),
             borderSide: BorderSide(color: Colors.blue, width: 2),

@@ -11,8 +11,9 @@ import 'package:http/http.dart' as http;
 class UserController extends GetxController {
   String userName, userEmail, userPassword, mobilePhone, attachNPhone;
   var userLoading = false.obs;
-  User user = User();
+  User userC = User();
   List<dynamic> phones;
+  List<dynamic> phoneId;
   String old;
   var showTextForm = false.obs;
 
@@ -35,24 +36,20 @@ class UserController extends GetxController {
       },
     );
     final extractedData = jsonDecode(response.body);
-    print(response.body);
+    // print(response.body);
     if (extractedData == null) {
       return;
     }
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
-      user = User(
-        id: responseData['id'],
-        name: responseData['name'],
-        accSerial: responseData['accSerial'],
-        address: responseData['address'],
-        createdAt: responseData['createdAt'],
-        email: responseData['email'],
-        phones: responseData['phones'],
-      );
-      print(responseData['phones']);
-      phones = responseData['phones'];
-      print(user.phones);
+     final user = User.fromMap(responseData);
+      userC=user;
+      // print(user.na);
+      phones = user.user.phones.map((e) => e.phone).toList();
+      phoneId = user.user.phones.map((e) => e.id).toList();
+      print(phones[0]);
+     
+      // print(phones);
       userLoading(false);
 
       Future.delayed(Duration(milliseconds: 2000), () {
@@ -64,7 +61,7 @@ class UserController extends GetxController {
       
     }
 
-    return user;
+    return userC;
   }
 
   attachPhone() async {

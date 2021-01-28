@@ -81,9 +81,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                                 //   buildAreaNoTextField('PhSerial', (value) {
                                 //   _editAddressformData['PhSerial'] = value;
                                 // }),
-                                buildPhoneTextField((value) {
-                                  _editAddressformData['PhSerial'] = value;
-                                }),
+                                // buildPhoneTextField((value) {
+                                //   _editAddressformData['PhSerial'] = value;
+                                // }),
                                     Obx(() {
                               if (!controllerss.showTextForm.value)
                                 return Text('');
@@ -257,38 +257,38 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   //   );
   // }
 
-  Widget buildPhoneTextField(onchanged) {
-    final controllerss = Get.find<UserController>();
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: DropdownButtonFormField(
-        value: controllerss.old,
-        onChanged: onchanged,
-        items: controllerss.user.phones.map((phone) {
-          var i = controllerss.phones.indexOf(phone);
-          return DropdownMenuItem<String>(
-            child: Text(controllerss.user.phones[i]['phone'].toString()),
-            value: controllerss.user.phones[i]['id'].toString(),
-          );
-        }).toList(),
-        decoration: InputDecoration(
-          hintText:
-              controllerss.user.phones != null ? 'Mobile Phones' : 'loading',
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide(color: Colors.blue, width: 2),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.grey,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget buildPhoneTextField(onchanged) {
+  //   final controllerss = Get.find<UserController>();
+  //   return Padding(
+  //     padding: const EdgeInsets.all(8.0),
+  //     child: DropdownButtonFormField(
+  //       value: controllerss.old,
+  //       onChanged: onchanged,
+  //       items: controllerss.user.phones.map((phone) {
+  //         var i = controllerss.phones.indexOf(phone);
+  //         return DropdownMenuItem<String>(
+  //           child: Text(controllerss.user.phones[i]['phone'].toString()),
+  //           value: controllerss.user.phones[i]['id'].toString(),
+  //         );
+  //       }).toList(),
+  //       decoration: InputDecoration(
+  //         hintText:
+  //             controllerss.user.phones != null ? 'Mobile Phones' : 'loading',
+  //         focusedBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(20.0),
+  //           borderSide: BorderSide(color: Colors.blue, width: 2),
+  //         ),
+  //         enabledBorder: OutlineInputBorder(
+  //           borderSide: BorderSide(
+  //             color: Colors.grey,
+  //             width: 2,
+  //           ),
+  //           borderRadius: BorderRadius.circular(20.0),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget buildareasTextField(onchanged, onTap) {
     return Padding(

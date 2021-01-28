@@ -60,7 +60,7 @@ class AddressesController extends GetxController {
         //     backgroundColor: Colors.black);
         Future.delayed(Duration(milliseconds: 1000), () {
           print(response.body);
-         getAddresses();
+          getAddresses();
           Get.off(AddressesScreen());
         });
 
@@ -89,14 +89,12 @@ class AddressesController extends GetxController {
         },
         body: jsonEncode(formData),
       );
-      print(response.body);
+      // print(response.body);
       if (response.statusCode == 200) {
         String responseMsg = "Address Added Successfully";
-        Get.snackbar('Success', responseMsg,
-            snackPosition: SnackPosition.BOTTOM,
-            colorText: Colors.white,
-            backgroundColor: Colors.black);
-        Future.delayed(Duration(milliseconds: 300), () {
+        Get.snackbar('Success', responseMsg);
+        getAddresses();
+        Future.delayed(Duration(milliseconds: 1000), () {
           Get.off(AddressesScreen());
         });
         print(response.body);
@@ -155,7 +153,7 @@ class AddressesController extends GetxController {
       if (response.statusCode == 200) {
         List<Addresses> loadedAddresses = fromAddressesJsonArray(response.body);
         adresses.assignAll(loadedAddresses);
-        // print(response.body);
+        print(response.body);
         // print('$adresses sss');
         update();
         addressLoading(false);

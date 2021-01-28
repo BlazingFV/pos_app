@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pos_app/controllers/categories_controller.dart';
+import 'package:pos_app/controllers/product_controller.dart';
+
 class CategoriesScreen extends StatefulWidget {
   @override
   _CategoriesScreenState createState() => _CategoriesScreenState();
@@ -8,6 +10,7 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   CategoriesController controller = Get.put(CategoriesController());
+  ProductController cont = Get.put(ProductController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +80,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         },
         items: controller.subCategories.groups.map(
           (subCat) {
+            cont.getProducts();
             return DropdownMenuItem<String>(
               child: Text('${subCat.groupName}'),
               value: '${subCat.id}',
