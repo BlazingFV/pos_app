@@ -27,7 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: InputDecoration(
               hintText: 'Search for a Product',
               suffixIcon: InkWell(onTap:(){
-              controller.getProductsQuery();
+              controller.getProductsQuery(); 
+              
               },child: Icon(Icons.search)),
             ),
           ),
